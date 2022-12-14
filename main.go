@@ -16,8 +16,12 @@ import (
 )
 
 func createFile(req *http.Request) string {
-	fileName := fmt.Sprintf("%d.py", rand.Intn(100000))
-	file, err := os.Create("runs/" + fileName)
+	if _, err := os.Stat("runs"); os.IsNotExist(err) {
+		os.Mkdir("runs", 0777)
+	}
+
+	fileName := fmt.Sprintf("runs/%s%d.py", "run", rand.Intn(100000))
+	file, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -30,6 +34,23 @@ func createFile(req *http.Request) string {
 	}
 
 	return fileName
+}
+
+func clean(cli *client.Client, response container.ContainerCreateCreatedBody, ctx context.Context, fileName string) {
+	// stop the container
+	if err := cli.ContainerStop(ctx, response.ID, nil); err != nil {
+		panic(err)
+	}
+
+	// remove the container
+	if err := cli.ContainerRemove(ctx, response.ID, types.ContainerRemoveOptions{}); err != nil {
+		panic(err)
+	}
+
+	// remove the file
+	if err := os.Remove(fileName); err != nil {
+		panic(err)
+	}
 }
 
 func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
@@ -77,15 +98,19 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 	}
 
 	buf, err := io.ReadAll(out)
-
-	// remove the container
-	if err := cli.ContainerRemove(ctx, response.ID, types.ContainerRemoveOptions{}); err != nil {
+	if err != nil {
 		panic(err)
 	}
 
 	output, err := json.Marshal(map[string]string{
 		"output": string(buf),
 	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	go clean(cli, response, ctx, fileName)
 
 	res.Header().Add("Content-Type", "application/json")
 	res.Write(output)
