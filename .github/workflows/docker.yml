@@ -1,4 +1,4 @@
-name: Publish Alpine to Docker Hub
+name: Publish RCE Image to Docker Hub
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Build and Push Alpine Image
+      - name: Build and Push RCE Image
         uses: docker/build-push-action@v3
         with:
           platforms: linux/amd64, linux/arm64
