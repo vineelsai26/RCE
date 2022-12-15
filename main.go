@@ -15,12 +15,25 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func createFile(req *http.Request) string {
+func getFileExtension(language string) string {
+	switch language {
+	case "python":
+		return ".py"
+	case "c":
+		return ".c"
+	case "cpp":
+		return ".cpp"
+	default:
+		return ".py"
+	}
+}
+
+func createFile(code string, language string) string {
 	if _, err := os.Stat("runs"); os.IsNotExist(err) {
 		os.Mkdir("runs", 0777)
 	}
 
-	fileName := fmt.Sprintf("runs/%s%d.py", "run", rand.Intn(100000))
+	fileName := fmt.Sprintf("runs/%s%d%s", "run", rand.Intn(100000), getFileExtension(language))
 	file, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
@@ -28,12 +41,38 @@ func createFile(req *http.Request) string {
 
 	defer file.Close()
 
-	_, err = file.WriteString(req.FormValue("code"))
+	_, err = file.WriteString(code)
 	if err != nil {
 		panic(err)
 	}
 
 	return fileName
+}
+
+func getDockerImage(language string) string {
+	switch language {
+	case "python":
+		return "vineelsai/python"
+	case "c":
+		return "vineelsai/gcc"
+	case "cpp":
+		return "vineelsai/gcc"
+	default:
+		return "vineelsai/python"
+	}
+}
+
+func getRunCommand(language string, fileName string) []string {
+	switch language {
+	case "python":
+		return []string{"python", "/usr/src/app/" + fileName}
+	case "c":
+		return []string{"gcc", "/usr/src/app/" + fileName, "-o", "/usr/src/app/" + fileName + ".out", "&&", "/usr/src/app/" + fileName + ".out"}
+	case "cpp":
+		return []string{"g++", "/usr/src/app/" + fileName, "-o", "/usr/src/app/" + fileName + ".out", "&&", "/usr/src/app/" + fileName + ".out"}
+	default:
+		return []string{"python", "/usr/src/app/" + fileName}
+	}
 }
 
 func clean(cli *client.Client, response container.ContainerCreateCreatedBody, ctx context.Context, fileName string) {
@@ -60,14 +99,16 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 		panic(err)
 	}
 
-	fileName := createFile(req)
+	code := req.FormValue("code")
+	language := req.FormValue("language")
+	fileName := createFile(code, language)
 
 	// Create the container
 	response, err := cli.ContainerCreate(
 		ctx,
 		&container.Config{
-			Image:           "vineelsai/python",
-			Cmd:             []string{"python", "/usr/src/app/" + fileName},
+			Image:           getDockerImage(language),
+			Cmd:             getRunCommand(language, fileName),
 			NetworkDisabled: true,
 		},
 		&container.HostConfig{
