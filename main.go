@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -29,11 +30,11 @@ func getFileExtension(language string) string {
 }
 
 func createFile(code string, language string) string {
-	if _, err := os.Stat("runs"); os.IsNotExist(err) {
-		os.Mkdir("runs", 0777)
+	if _, err := os.Stat("/usr/src/app/runs"); os.IsNotExist(err) {
+		os.Mkdir("/usr/src/app/runs", 0777)
 	}
 
-	fileName := fmt.Sprintf("runs/%s%d%s", "run", rand.Intn(100000), getFileExtension(language))
+	fileName := fmt.Sprintf("/usr/src/app/runs/%s%d%s", "run", rand.Intn(100000), getFileExtension(language))
 	file, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
@@ -63,15 +64,17 @@ func getDockerImage(language string) string {
 }
 
 func getRunCommand(language string, fileName string) []string {
+	path := strings.Split(fileName, ".")
+
 	switch language {
 	case "python":
-		return []string{"python", "/usr/src/app/" + fileName}
+		return []string{"python", fileName}
 	case "c":
-		return []string{"gcc", "/usr/src/app/" + fileName, "-o", "/usr/src/app/" + fileName + ".out", "&&", "/usr/src/app/" + fileName + ".out"}
+		return []string{"bash", "-c", "gcc " + fileName + " -o " + path[0] + " && " + path[0]}
 	case "cpp":
-		return []string{"g++", "/usr/src/app/" + fileName, "-o", "/usr/src/app/" + fileName + ".out", "&&", "/usr/src/app/" + fileName + ".out"}
+		return []string{"bash", "-c", "g++ " + fileName + " -o " + path[0] + " && " + path[0]}
 	default:
-		return []string{"python", "/usr/src/app/" + fileName}
+		return []string{"python", fileName}
 	}
 }
 
@@ -133,10 +136,16 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 	// get the logs from the container
 	out, err := cli.ContainerLogs(ctx, response.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: true,
+		Follow:     true,
 	})
 	if err != nil {
 		panic(err)
 	}
+
+	// ignore first 8 bits of nonsence
+	ignore := make([]byte, 8)
+	out.Read(ignore)
 
 	buf, err := io.ReadAll(out)
 	if err != nil {
