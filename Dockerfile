@@ -29,4 +29,4 @@ RUN go build
 
 CMD ["./main"]
 
-# docker run -it -e PORT=3000 -p 4000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce
+# docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce

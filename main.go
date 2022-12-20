@@ -79,11 +79,6 @@ func getRunCommand(language string, fileName string) []string {
 }
 
 func clean(cli *client.Client, response container.ContainerCreateCreatedBody, ctx context.Context, fileName string) {
-	// stop the container
-	if err := cli.ContainerStop(ctx, response.ID, nil); err != nil {
-		panic(err)
-	}
-
 	// remove the container
 	if err := cli.ContainerRemove(ctx, response.ID, types.ContainerRemoveOptions{}); err != nil {
 		panic(err)
@@ -123,13 +118,17 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 		nil,
 		"",
 	)
-
 	if err != nil {
 		panic(err)
 	}
 
 	// start the container, if it returns an error, print it
 	if err := cli.ContainerStart(ctx, response.ID, types.ContainerStartOptions{}); err != nil {
+		panic(err)
+	}
+
+	// stop the container
+	if err := cli.ContainerStop(ctx, response.ID, nil); err != nil {
 		panic(err)
 	}
 
@@ -143,24 +142,26 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 		panic(err)
 	}
 
+	// clean up the container and the file
+	go clean(cli, response, ctx, fileName)
+
 	// ignore first 8 bits of nonsense
 	ignore := make([]byte, 8)
 	out.Read(ignore)
 
+	// read the rest of the output
 	buf, err := io.ReadAll(out)
 	if err != nil {
 		panic(err)
 	}
 
+	// convert the output to json
 	output, err := json.Marshal(map[string]string{
 		"output": string(buf),
 	})
-
 	if err != nil {
 		panic(err)
 	}
-
-	go clean(cli, response, ctx, fileName)
 
 	res.Header().Add("Content-Type", "application/json")
 	res.Write(output)
