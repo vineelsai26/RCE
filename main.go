@@ -143,7 +143,7 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 		panic(err)
 	}
 
-	// ignore first 8 bits of nonsence
+	// ignore first 8 bits of nonsense
 	ignore := make([]byte, 8)
 	out.Read(ignore)
 
