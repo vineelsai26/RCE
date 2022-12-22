@@ -113,6 +113,12 @@ func run(res http.ResponseWriter, req *http.Request, ctx context.Context) {
 			Binds: []string{
 				"/usr/src/app/runs:/usr/src/app/runs",
 			},
+			RestartPolicy: container.RestartPolicy{
+				Name: "no",
+			},
+			Resources: container.Resources{
+				Memory: 1024 * 1024 * 512, // 512 MB
+			},
 		},
 		nil,
 		nil,
