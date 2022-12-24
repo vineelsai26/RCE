@@ -212,8 +212,9 @@ func pullImages() {
 func main() {
 	godotenv.Load()
 	ctx := context.Background()
-	PORT := os.Getenv("PORT")
+	PORT := "3000"
 	RUNS_DIR := "/usr/src/app/runs"
+	VERSION := "1.1.1"
 
 	args := os.Args[1:]
 
@@ -228,7 +229,7 @@ func main() {
 			return
 		}
 		if arg == "--version" {
-			fmt.Println("Version: 1.1.0")
+			fmt.Println(VERSION)
 			return
 		}
 		if arg == "--pull-images" {
