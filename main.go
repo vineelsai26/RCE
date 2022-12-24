@@ -228,7 +228,7 @@ func main() {
 			return
 		}
 		if arg == "--version" {
-			fmt.Println("Version: 1.0.0")
+			fmt.Println("Version: 1.1.0")
 			return
 		}
 		if arg == "--pull-images" {

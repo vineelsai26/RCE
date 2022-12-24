@@ -13,8 +13,8 @@ RUN apt install docker-ce docker-ce-cli containerd.io -y
 
 WORKDIR /tmp
 
-RUN wget https://go.dev/dl/go1.19.linux-amd64.tar.gz 
-RUN tar -xvf go1.19.linux-amd64.tar.gz   
+RUN wget https://go.dev/dl/go1.19.linux-$(dpkg --print-architecture).tar.gz
+RUN tar -xvf go1.19.linux-*.tar.gz
 RUN mv go /usr/local
 
 ENV GOROOT=/usr/local/go 
