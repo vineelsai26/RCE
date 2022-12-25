@@ -14,7 +14,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/joho/godotenv"
 )
 
 func getFileExtension(language string) string {
@@ -210,7 +209,6 @@ func pullImages() {
 }
 
 func main() {
-	godotenv.Load()
 	ctx := context.Background()
 	PORT := "3000"
 	RUNS_DIR := "/usr/src/app/runs"

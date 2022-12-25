@@ -2,10 +2,7 @@ module main
 
 go 1.19
 
-require (
-	github.com/docker/docker v20.10.22+incompatible
-	github.com/joho/godotenv v1.4.0
-)
+require github.com/docker/docker v20.10.22+incompatible
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect

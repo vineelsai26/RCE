@@ -9,20 +9,20 @@ RCE is a http API in Go with which you can run different programs written in dif
 * From Docker Hub
 
 ```sh
-docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce
+docker run -it -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce
 ```
 
 * From GHCR
 
 ```sh
-docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" ghcr.io/vineelsai26/rce:latest
+docker run -it -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" ghcr.io/vineelsai26/rce:latest
 ```
 
 ***Note: Both images are the same***
 
 ### From command line
 
-* Download the latest Binary from [Releases Page](https://github.com/vineelsai26/RCE/releases/latest) 
+* Download the latest Binary from [Releases Page](https://github.com/vineelsai26/RCE/releases/latest)
 
 * Pull the required docker images
 
@@ -38,7 +38,7 @@ docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docke
 
 ## Usage
 
-* To run your code just make a POST request to http://localhost:3000/run with body
+* To run your code just make a POST request to <http://localhost:3000/run> with body
 
 ```json
 {
@@ -63,7 +63,7 @@ docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docke
 
 ## Help
 
-* For help just run to know all the things you can do 
+* For help just run to know all the things you can do
 
 ```sh
 ./rce-linux-amd64.bin --help
