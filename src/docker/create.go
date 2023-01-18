@@ -20,7 +20,7 @@ func createFile(code string, language string, RUNS_DIR string) string {
 	filePath := filepath.Join(RUNS_DIR, fileName)
 
 	// create the file
-	file, err := os.Create(fileName)
+	file, err := os.Create(filePath)
 	if err != nil {
 		panic(err)
 	}

@@ -22,6 +22,11 @@ func main() {
 	RUNS_DIR := "/usr/src/app/runs"
 	VERSION := "1.1.1"
 
+	if len(os.Args) < 2 {
+		help()
+		return
+	}
+
 	args := os.Args[1:]
 
 	// parse the command line arguments
@@ -46,8 +51,7 @@ func main() {
 		}
 	}
 
-	command := os.Args[1]
-	if command == "server" {
+	if args[0] == "server" {
 		api.Serve(PORT, RUNS_DIR)
 	} else {
 		help()
