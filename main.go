@@ -11,10 +11,13 @@ import (
 
 func help() {
 	fmt.Println("Usage: rce [OPTIONS]")
-	fmt.Println("--version - prints the version")
-	fmt.Println("--pull-images - pulls the docker images required for the code executions to run")
-	fmt.Println("--runs-dir=RUNS_DIR - sets the directory where the code files will be stored (default: /usr/src/app/runs)")
-	fmt.Println("--port=PORT - sets the port where the server will run on (default: 3000)")
+	fmt.Println("Options:")
+	fmt.Println("server - starts the server")
+	fmt.Println("-h or --help - prints this help")
+	fmt.Println("-v or --version - prints the version")
+	fmt.Println("-i or --pull-images - pulls the docker images required for the code executions to run")
+	fmt.Println("-d RUNS_DIR or --runs-dir=RUNS_DIR - sets the directory where the code files will be stored (default: /usr/src/app/runs)")
+	fmt.Println("-p PORT or --port=PORT - sets the port where the server will run on (default: 3000)")
 }
 
 func main() {
@@ -30,24 +33,30 @@ func main() {
 	args := os.Args[1:]
 
 	// parse the command line arguments
-	for _, arg := range args {
-		if arg == "--help" {
+	for index, arg := range args {
+		if arg == "--help" || arg == "-h" {
 			help()
 			return
 		}
-		if arg == "--version" {
-			fmt.Println(VERSION)
+		if arg == "--version" || arg == "-v" {
+			fmt.Print(VERSION)
 			return
 		}
-		if arg == "--pull-images" {
+		if arg == "--pull-images" || arg == "-i" {
 			docker.PullImages()
 			return
 		}
 		if strings.Contains(arg, "--runs-dir=") {
 			RUNS_DIR = strings.Split(arg, "=")[1]
 		}
+		if arg == "-d" {
+			RUNS_DIR = args[index+1]
+		}
 		if strings.Contains(arg, "--port=") {
 			PORT = strings.Split(arg, "=")[1]
+		}
+		if arg == "-p" {
+			PORT = args[index+1]
 		}
 	}
 

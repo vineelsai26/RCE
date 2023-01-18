@@ -17,7 +17,7 @@ RUN wget https://go.dev/dl/go1.19.linux-$(dpkg --print-architecture).tar.gz
 RUN tar -xvf go1.19.linux-*.tar.gz
 RUN mv go /usr/local
 
-ENV GOROOT=/usr/local/go 
+ENV GOROOT=/usr/local/go
 ENV PATH=$GOROOT/bin:$PATH
 
 WORKDIR /usr/src/app
@@ -27,6 +27,6 @@ COPY . .
 RUN go get
 RUN go build
 
-CMD ["./main"]
+CMD ["./main", "server"]
 
 # docker run -it -e PORT=3000 -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce
