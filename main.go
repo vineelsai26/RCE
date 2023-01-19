@@ -7,6 +7,7 @@ import (
 
 	"rce/src/api"
 	"rce/src/docker"
+	"rce/src/local"
 )
 
 func help() {
@@ -62,6 +63,11 @@ func main() {
 
 	if args[0] == "server" {
 		api.Serve(PORT, RUNS_DIR)
+	} else if args[0] == "run" {
+		fileName := args[1]
+		language := args[2]
+
+		fmt.Println(string(local.Execute(fileName, language)))
 	} else {
 		help()
 	}

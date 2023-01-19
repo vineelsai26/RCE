@@ -2,15 +2,15 @@ package docker
 
 import (
 	"context"
-	"encoding/json"
 	"io"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 )
 
-func Run(RUNS_DIR string, code string, language string) []byte {
+func Run(filePath string, language string) []byte {
 	ctx := context.Background()
 
 	// Connect to the Docker daemon
@@ -19,7 +19,11 @@ func Run(RUNS_DIR string, code string, language string) []byte {
 		panic(err)
 	}
 
-	filePath := createFile(code, language, RUNS_DIR)
+	runsDir := ""
+
+	for _, folder := range strings.Split(filePath, "/")[0 : len(strings.Split(filePath, "/"))-1] {
+		runsDir += folder + "/"
+	}
 
 	// Create the container
 	response, err := cli.ContainerCreate(
@@ -31,7 +35,7 @@ func Run(RUNS_DIR string, code string, language string) []byte {
 		},
 		&container.HostConfig{
 			Binds: []string{
-				RUNS_DIR + ":" + RUNS_DIR,
+				runsDir + ":" + runsDir,
 			},
 			RestartPolicy: container.RestartPolicy{
 				Name: "no",
@@ -76,15 +80,7 @@ func Run(RUNS_DIR string, code string, language string) []byte {
 	out.Read(ignore)
 
 	// read the rest of the output
-	buf, err := io.ReadAll(out)
-	if err != nil {
-		panic(err)
-	}
-
-	// convert the output to json
-	output, err := json.Marshal(map[string]string{
-		"output": string(buf),
-	})
+	output, err := io.ReadAll(out)
 	if err != nil {
 		panic(err)
 	}
