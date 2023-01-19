@@ -1,0 +1,36 @@
+name: "Release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: "Build"
+      run: |
+        # Linux AMD64
+        env GOOS=linux GOARCH=amd64 go build
+        tar -czvf rce-linux-amd64.tar.gz rce
+        
+        # Linux ARM64
+        env GOOS=linux GOARCH=arm64 go build
+        tar -czvf rce-linux-arm64.tar.gz rce
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.RELEASE_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        files: |
+          *.tar.gz
