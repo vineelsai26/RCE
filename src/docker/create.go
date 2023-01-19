@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func createFile(code string, language string, RUNS_DIR string) string {
+func CreateFile(code string, language string, RUNS_DIR string) string {
 	// create the runs directory if it doesn't exist
 	if _, err := os.Stat(RUNS_DIR); os.IsNotExist(err) {
 		os.Mkdir(RUNS_DIR, 0777)
