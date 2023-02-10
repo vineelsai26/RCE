@@ -46,7 +46,7 @@ func Run(filePath string, language string) []byte {
 			Resources: container.Resources{
 				Memory: 1024 * 1024 * 512, // 512 MB
 			},
-			AutoRemove: true,
+			// AutoRemove: true,
 		},
 		nil,
 		nil,
@@ -58,6 +58,16 @@ func Run(filePath string, language string) []byte {
 
 	// start the container, if it returns an error, print it
 	if err := cli.ContainerStart(ctx, response.ID, types.ContainerStartOptions{}); err != nil {
+		panic(err)
+	}
+
+	timeout := 600
+
+	// stop the container
+	if err := cli.ContainerStop(ctx, response.ID, container.StopOptions{
+		Signal:  "SIGTERM",
+		Timeout: &timeout,
+	}); err != nil {
 		panic(err)
 	}
 
