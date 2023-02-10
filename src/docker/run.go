@@ -19,6 +19,9 @@ func Run(filePath string, language string) []byte {
 		panic(err)
 	}
 
+	// Negotiate to use compatable Docker API version
+	cli.NegotiateAPIVersion(ctx)
+
 	runsDir := ""
 
 	for _, folder := range strings.Split(filePath, "/")[0 : len(strings.Split(filePath, "/"))-1] {
@@ -58,7 +61,10 @@ func Run(filePath string, language string) []byte {
 	}
 
 	// stop the container
-	if err := cli.ContainerStop(ctx, response.ID, nil); err != nil {
+	if err := cli.ContainerStop(ctx, response.ID, container.StopOptions{
+		Signal:  "SIGTERM",
+		Timeout: nil,
+	}); err != nil {
 		panic(err)
 	}
 

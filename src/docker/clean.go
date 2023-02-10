@@ -9,7 +9,7 @@ import (
 	"github.com/docker/docker/client"
 )
 
-func clean(cli *client.Client, response container.ContainerCreateCreatedBody, ctx context.Context, fileName string) {
+func clean(cli *client.Client, response container.CreateResponse, ctx context.Context, fileName string) {
 	// remove the container
 	if err := cli.ContainerRemove(ctx, response.ID, types.ContainerRemoveOptions{}); err != nil {
 		panic(err)
