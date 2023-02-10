@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"os"
+	"strings"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -18,4 +19,7 @@ func clean(cli *client.Client, response container.CreateResponse, ctx context.Co
 	if err := os.Remove(fileName); err != nil {
 		panic(err)
 	}
+
+	// remove executable for C/C++
+	os.Remove(strings.Split(fileName, ".")[0])
 }

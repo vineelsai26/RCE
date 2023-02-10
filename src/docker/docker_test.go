@@ -2,8 +2,13 @@ package docker
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+var path, _ = os.Getwd()
+var RUNS_DIR = filepath.Join(path, "runs")
 
 func TestPullImage(t *testing.T) {
 	PullImages()
@@ -12,7 +17,6 @@ func TestPullImage(t *testing.T) {
 func TestRunPython(t *testing.T) {
 	code := "print('Hello World')"
 	language := "python"
-	RUNS_DIR := "/usr/src/app/runs"
 
 	filePath := CreateFile(code, language, RUNS_DIR)
 
@@ -26,7 +30,6 @@ func TestRunPython(t *testing.T) {
 func TestRunPythonSleep(t *testing.T) {
 	code := "import time\ntime.sleep(10)\nprint(\"Hello World\")"
 	language := "python"
-	RUNS_DIR := "/usr/src/app/runs"
 
 	filePath := CreateFile(code, language, RUNS_DIR)
 
@@ -40,7 +43,6 @@ func TestRunPythonSleep(t *testing.T) {
 func TestRunC(t *testing.T) {
 	code := "#include <stdio.h>\n int main() {\n	printf(\"Hello World\");\n    return 0;\n}"
 	language := "c"
-	RUNS_DIR := "/usr/src/app/runs"
 
 	filePath := CreateFile(code, language, RUNS_DIR)
 
@@ -55,7 +57,6 @@ func TestRunC(t *testing.T) {
 func TestRunCpp(t *testing.T) {
 	code := "#include <iostream>\n int main() {\n    std::cout << \"Hello World\";\n    return 0;\n}"
 	language := "cpp"
-	RUNS_DIR := "/usr/src/app/runs"
 
 	filePath := CreateFile(code, language, RUNS_DIR)
 
