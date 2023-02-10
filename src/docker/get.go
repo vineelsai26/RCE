@@ -10,6 +10,8 @@ func getFileExtension(language string) string {
 		return ".c"
 	case "cpp":
 		return ".cpp"
+	case "javascript":
+		return ".js"
 	default:
 		return ".py"
 	}
@@ -24,6 +26,8 @@ func getDockerImage(language string) string {
 		return "vineelsai/gcc"
 	case "cpp":
 		return "vineelsai/gcc"
+	case "javascript":
+		return "vineelsai/nodejs"
 	default:
 		return "vineelsai/python"
 	}
@@ -42,6 +46,8 @@ func getRunCommand(language string, filePath string) []string {
 		return []string{"bash", "-c", "gcc " + filePath + " -o " + path[0] + " && " + path[0]}
 	case "cpp":
 		return []string{"bash", "-c", "g++ " + filePath + " -o " + path[0] + " && " + path[0]}
+	case "javascript":
+		return []string{"node", filePath}
 	default:
 		return []string{"python", filePath}
 	}
