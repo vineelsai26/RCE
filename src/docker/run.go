@@ -46,6 +46,7 @@ func Run(filePath string, language string) []byte {
 			Resources: container.Resources{
 				Memory: 1024 * 1024 * 512, // 512 MB
 			},
+			AutoRemove: true,
 		},
 		nil,
 		nil,
@@ -60,14 +61,6 @@ func Run(filePath string, language string) []byte {
 		panic(err)
 	}
 
-	// stop the container
-	if err := cli.ContainerStop(ctx, response.ID, container.StopOptions{
-		Signal:  "SIGTERM",
-		Timeout: nil,
-	}); err != nil {
-		panic(err)
-	}
-
 	// get the logs from the container
 	out, err := cli.ContainerLogs(ctx, response.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
@@ -79,7 +72,7 @@ func Run(filePath string, language string) []byte {
 	}
 
 	// clean up the container and the file
-	go clean(cli, response, ctx, filePath)
+	defer clean(cli, response, ctx, filePath)
 
 	// ignore first 8 bits of nonsense
 	ignore := make([]byte, 8)
