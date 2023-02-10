@@ -67,3 +67,16 @@ func TestRunCpp(t *testing.T) {
 		t.Error("Output not Matched")
 	}
 }
+
+func TestRunJavaScript(t *testing.T) {
+	code := "console.log('Hello World')"
+	language := "javascript"
+
+	filePath := CreateFile(code, language, RUNS_DIR)
+
+	output := Run(filePath, language)
+
+	if string(output) != string("Hello World\n") {
+		t.Error("Output not Matched")
+	}
+}
