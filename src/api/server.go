@@ -34,7 +34,7 @@ func Serve(PORT string, RUNS_DIR string) {
 	})
 
 	// start the server
-	if err := http.ListenAndServe(":"+PORT, nil); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:"+PORT, nil); err != nil {
 		panic(err)
 	}
 }
