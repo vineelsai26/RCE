@@ -46,7 +46,7 @@ func Run(filePath string, language string) []byte {
 			Resources: container.Resources{
 				Memory: 1024 * 1024 * 512, // 512 MB
 			},
-			AutoRemove: true,
+			// AutoRemove: true,
 		},
 		nil,
 		nil,
