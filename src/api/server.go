@@ -25,8 +25,9 @@ func Serve(PORT string, RUNS_DIR string) {
 				panic(err)
 			}
 
-			// set the content type to json and write the output
-			res.Header().Add("Content-Type", "application/json")
+			// set the content type to json, enable CORS and write the output
+			res.Header().Set("Content-Type", "application/json")
+			res.Header().Set("Access-Control-Allow-Origin", "*")
 			res.Write(output)
 		case http.MethodGet:
 			res.Write([]byte("Hello World"))
