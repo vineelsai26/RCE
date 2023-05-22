@@ -2,7 +2,7 @@ module rce
 
 go 1.19
 
-require github.com/docker/docker v23.0.5+incompatible
+require github.com/docker/docker v24.0.1+incompatible
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
