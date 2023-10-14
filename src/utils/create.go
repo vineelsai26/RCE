@@ -25,7 +25,7 @@ func getFileExtension(language string) string {
 func CreateFile(code string, language string, dir string) (string, string) {
 	// create the file name
 	runId := fmt.Sprintf("%s%d", "run", rand.Intn(100000))
-	folderPath := filepath.Join(dir)
+	folderPath := filepath.Join(dir, runId)
 	filePath := filepath.Join(folderPath, "main"+getFileExtension(language))
 
 	// create the runs directory if it doesn't exist
