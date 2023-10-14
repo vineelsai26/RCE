@@ -2,16 +2,13 @@ package tests
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"vineelsai.com/rce/src/docker"
 	"vineelsai.com/rce/src/utils"
 )
 
-var path, _ = os.Getwd()
-var RUNS_DIR = filepath.Join(path, "runs")
+var RUNS_DIR = "runs"
 
 func TestPullImage(t *testing.T) {
 	docker.PullImages()
