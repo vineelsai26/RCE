@@ -1,26 +1,29 @@
-package docker
+package tests
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"vineelsai.com/rce/src/docker"
+	"vineelsai.com/rce/src/utils"
 )
 
 var path, _ = os.Getwd()
 var RUNS_DIR = filepath.Join(path, "runs")
 
 func TestPullImage(t *testing.T) {
-	PullImages()
+	docker.PullImages()
 }
 
 func TestRunPython(t *testing.T) {
 	code := "print('Hello World')"
 	language := "python"
 
-	filePath := CreateFile(code, language, RUNS_DIR)
+	filePath, runId := utils.CreateFile(code, language, RUNS_DIR)
 
-	output := Run(filePath, language)
+	output := docker.Run(filePath, language, runId)
 
 	if string(output) != string("Hello World\n") {
 		t.Error("Output not Matched")
@@ -31,9 +34,9 @@ func TestRunPythonSleep(t *testing.T) {
 	code := "import time\ntime.sleep(10)\nprint(\"Hello World\")"
 	language := "python"
 
-	filePath := CreateFile(code, language, RUNS_DIR)
+	filePath, runId := utils.CreateFile(code, language, RUNS_DIR)
 
-	output := Run(filePath, language)
+	output := docker.Run(filePath, language, runId)
 
 	if string(output) != string("Hello World\n") {
 		t.Error("Output not Matched")
@@ -44,9 +47,9 @@ func TestRunC(t *testing.T) {
 	code := "#include <stdio.h>\n int main() {\n	printf(\"Hello World\");\n    return 0;\n}"
 	language := "c"
 
-	filePath := CreateFile(code, language, RUNS_DIR)
+	filePath, runId := utils.CreateFile(code, language, RUNS_DIR)
 
-	output := Run(filePath, language)
+	output := docker.Run(filePath, language, runId)
 
 	if string(output) != string("Hello World") {
 		fmt.Println(string(output))
@@ -58,9 +61,9 @@ func TestRunCpp(t *testing.T) {
 	code := "#include <iostream>\n int main() {\n    std::cout << \"Hello World\";\n    return 0;\n}"
 	language := "cpp"
 
-	filePath := CreateFile(code, language, RUNS_DIR)
+	filePath, runId := utils.CreateFile(code, language, RUNS_DIR)
 
-	output := Run(filePath, language)
+	output := docker.Run(filePath, language, runId)
 
 	if string(output) != string("Hello World") {
 		fmt.Println(string(output))
@@ -72,9 +75,9 @@ func TestRunJavaScript(t *testing.T) {
 	code := "console.log('Hello World')"
 	language := "javascript"
 
-	filePath := CreateFile(code, language, RUNS_DIR)
+	filePath, runId := utils.CreateFile(code, language, RUNS_DIR)
 
-	output := Run(filePath, language)
+	output := docker.Run(filePath, language, runId)
 
 	if string(output) != string("Hello World\n") {
 		t.Error("Output not Matched")

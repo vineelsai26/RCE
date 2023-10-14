@@ -5,9 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"rce/src/api"
-	"rce/src/docker"
-	"rce/src/local"
+	"vineelsai.com/rce/src/api"
+	"vineelsai.com/rce/src/docker"
 )
 
 func help() {
@@ -17,13 +16,11 @@ func help() {
 	fmt.Println("-h or --help - prints this help")
 	fmt.Println("-v or --version - prints the version")
 	fmt.Println("-i or --pull-images - pulls the docker images required for the code executions to run")
-	fmt.Println("-d RUNS_DIR or --runs-dir=RUNS_DIR - sets the directory where the code files will be stored (default: /usr/src/app/runs)")
 	fmt.Println("-p PORT or --port=PORT - sets the port where the server will run on (default: 3000)")
 }
 
 func main() {
 	PORT := "3000"
-	RUNS_DIR := "/usr/src/app/runs"
 	VERSION := "1.1.1"
 
 	if len(os.Args) < 2 {
@@ -47,12 +44,6 @@ func main() {
 			docker.PullImages()
 			return
 		}
-		if strings.Contains(arg, "--runs-dir=") {
-			RUNS_DIR = strings.Split(arg, "=")[1]
-		}
-		if arg == "-d" {
-			RUNS_DIR = args[index+1]
-		}
 		if strings.Contains(arg, "--port=") {
 			PORT = strings.Split(arg, "=")[1]
 		}
@@ -62,12 +53,7 @@ func main() {
 	}
 
 	if args[0] == "server" {
-		api.Serve(PORT, RUNS_DIR)
-	} else if args[0] == "run" {
-		fileName := args[1]
-		language := args[2]
-
-		fmt.Println(string(local.Execute(fileName, language)))
+		api.Serve(PORT)
 	} else {
 		help()
 	}

@@ -1,2 +1,4 @@
 .env
 tmp
+runs
+.DS_Store

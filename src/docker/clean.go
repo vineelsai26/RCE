@@ -11,7 +11,7 @@ import (
 )
 
 func clean(cli *client.Client, response container.CreateResponse, ctx context.Context, fileName string) {
-	// // remove the container
+	// remove the container
 	if err := cli.ContainerRemove(ctx, response.ID, types.ContainerRemoveOptions{}); err != nil {
 		panic(err)
 	}

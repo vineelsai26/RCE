@@ -3,6 +3,8 @@ package docker
 import (
 	"context"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -10,7 +12,7 @@ import (
 	"github.com/docker/docker/client"
 )
 
-func Run(filePath string, language string) []byte {
+func Run(filePath string, language string, runId string) []byte {
 	ctx := context.Background()
 
 	// Connect to the Docker daemon
@@ -22,23 +24,27 @@ func Run(filePath string, language string) []byte {
 	// Negotiate to use compatable Docker API version
 	cli.NegotiateAPIVersion(ctx)
 
-	runsDir := ""
-
-	for _, folder := range strings.Split(filePath, "/")[0 : len(strings.Split(filePath, "/"))-1] {
-		runsDir += folder + "/"
+	currentDir, err := os.Getwd()
+	if err != nil {
+		panic(err)
 	}
+
+	runCommand := getRunCommand(language, strings.Replace(filePath, "runs/", "", 1))
 
 	// Create the container
 	response, err := cli.ContainerCreate(
 		ctx,
 		&container.Config{
 			Image:           getDockerImage(language),
-			Cmd:             getRunCommand(language, filePath),
+			Cmd:             runCommand,
 			NetworkDisabled: true,
+			WorkingDir:      "/usr/src/app/runs",
+			Hostname:        runId,
+			// User:            runId,
 		},
 		&container.HostConfig{
 			Binds: []string{
-				runsDir + ":" + runsDir,
+				filepath.Join(currentDir, "runs") + ":" + "/usr/src/app/runs",
 			},
 			RestartPolicy: container.RestartPolicy{
 				Name: "no",

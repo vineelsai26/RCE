@@ -21,37 +21,23 @@ func PullImages() {
 	// Negotiate to use compatable Docker API version
 	cli.NegotiateAPIVersion(ctx)
 
+	dockerImages := []string{
+		"vineelsai/python",
+		"vineelsai/gcc",
+		"vineelsai/nodejs",
+	}
+
 	// pull the images
-	if reader, err := cli.ImagePull(ctx, "vineelsai/python", types.ImagePullOptions{}); reader != nil {
-		if err != nil {
+	for _, image := range dockerImages {
+		if reader, err := cli.ImagePull(ctx, image, types.ImagePullOptions{}); reader != nil {
+			if err != nil {
+				panic(err)
+			}
+
+			defer reader.Close()
+			io.Copy(os.Stdout, reader)
+		} else {
 			panic(err)
 		}
-
-		defer reader.Close()
-		io.Copy(os.Stdout, reader)
-	} else {
-		panic(err)
-	}
-
-	if reader, err := cli.ImagePull(ctx, "vineelsai/gcc", types.ImagePullOptions{}); reader != nil {
-		if err != nil {
-			panic(err)
-		}
-
-		defer reader.Close()
-		io.Copy(os.Stdout, reader)
-	} else {
-		panic(err)
-	}
-
-	if reader, err := cli.ImagePull(ctx, "vineelsai/nodejs", types.ImagePullOptions{}); reader != nil {
-		if err != nil {
-			panic(err)
-		}
-
-		defer reader.Close()
-		io.Copy(os.Stdout, reader)
-	} else {
-		panic(err)
 	}
 }

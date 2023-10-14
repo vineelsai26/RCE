@@ -1,21 +1,8 @@
 package docker
 
-import "strings"
-
-func getFileExtension(language string) string {
-	switch language {
-	case "python":
-		return ".py"
-	case "c":
-		return ".c"
-	case "cpp":
-		return ".cpp"
-	case "javascript":
-		return ".js"
-	default:
-		return ".py"
-	}
-}
+import (
+	"strings"
+)
 
 // getDockerImage returns the docker image required to run code for the given language
 func getDockerImage(language string) string {

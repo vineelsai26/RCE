@@ -4,22 +4,33 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"rce/src/docker"
+	"vineelsai.com/rce/src/docker"
+	"vineelsai.com/rce/src/utils"
 )
 
-func Serve(PORT string, RUNS_DIR string) {
+type Payload struct {
+	Code     string `json:"code"`
+	Language string `json:"language"`
+}
+
+func Serve(PORT string) {
 	// handle the /run endpoint
 	http.HandleFunc("/run", func(res http.ResponseWriter, req *http.Request) {
 		switch req.Method {
 		case http.MethodPost:
-			code := req.FormValue("code")
-			language := req.FormValue("language")
+			var payload Payload
 
-			filePath := docker.CreateFile(code, language, RUNS_DIR)
+			err := json.NewDecoder(req.Body).Decode(&payload)
+			if err != nil {
+				panic(err)
+			}
+
+			filePath, runId := utils.CreateFile(payload.Code, payload.Language, "runs")
 
 			// convert the output to json
 			output, err := json.Marshal(map[string]string{
-				"output": string(docker.Run(filePath, language)),
+				"output": string(docker.Run(filePath, payload.Language, runId)),
+				"runId":  runId,
 			})
 			if err != nil {
 				panic(err)
