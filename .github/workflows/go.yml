@@ -5,36 +5,90 @@ name: Go
 
 on:
   push:
-    branches: [ "*" ]
+    branches: ["*"]
+    tags: "v*"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+
+env:
+  GoVersion: 1.21
 
 jobs:
-
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: 1.21
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GoVersion }}
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+      - name: Build
+        run: go build -v ./...
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Build
-      run: go build -v ./...
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GoVersion }}
 
-    - name: Test
-      run: go test -v ./...
+      - name: Test
+        run: go test -v ./...
 
-    - name: Build RCE Docker image
-      uses: docker/build-push-action@v5
-      with:
-        platforms: linux/amd64, linux/arm64
-        push: false
+  release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+    needs: test
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GoVersion }}
+
+      - name: Install zip
+        run: sudo apt install zip
+
+      - name: "Build"
+        env:
+          tag: ${{ github.ref_name }}
+        run: |
+          # Linux AMD64
+          env GOOS=linux GOARCH=amd64 go build -ldflags="-X 'vineelsai.com/rce/src.Version=$tag'"
+          tar -czvf rce-linux-amd64.tar.gz rce
+
+          # Linux ARM64
+          env GOOS=linux GOARCH=arm64 go build -ldflags="-X 'vineelsai.com/rce/src.Version=$tag'"
+          tar -czvf rce-linux-arm64.tar.gz rce
+
+          # MacOS AMD64
+          env GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'vineelsai.com/rce/src.Version=$tag'"
+          tar -czvf rce-macos-amd64.tar.gz rce
+          go clean
+
+          # MacOS ARM64
+          env GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'vineelsai.com/rce/src.Version=$tag'"
+          tar -czvf rce-macos-arm64.tar.gz rce
+          go clean
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.RELEASE_TOKEN }}"
+          prerelease: false
+          files: |
+            *.tar.gz
+            *.zip

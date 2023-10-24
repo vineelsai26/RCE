@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"vineelsai.com/rce/src"
 	"vineelsai.com/rce/src/api"
 	"vineelsai.com/rce/src/docker"
 )
@@ -21,7 +22,6 @@ func help() {
 
 func main() {
 	PORT := "3000"
-	VERSION := "1.1.1"
 
 	if len(os.Args) < 2 {
 		help()
@@ -37,7 +37,7 @@ func main() {
 			return
 		}
 		if arg == "--version" || arg == "-v" {
-			fmt.Print(VERSION)
+			src.GetVersion()
 			return
 		}
 		if arg == "--pull-images" || arg == "-i" {
