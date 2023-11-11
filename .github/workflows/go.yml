@@ -39,6 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: docker-practice/actions-setup-docker@master
+        if: matrix.os == 'macos-latest'
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
