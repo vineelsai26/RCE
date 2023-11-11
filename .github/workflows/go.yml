@@ -5,7 +5,7 @@ name: Go
 
 on:
   push:
-    branches: ["*"]
+    branches: ["main"]
     tags: "v*"
   pull_request:
     branches: ["main"]
@@ -38,6 +38,14 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
+
+      - name: Docker Setup for MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install docker
+          colima start
+
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
