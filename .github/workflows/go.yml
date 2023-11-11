@@ -5,7 +5,7 @@ name: Go
 
 on:
   push:
-    branches: ["*"]
+    branches: ["main"]
     tags: "v*"
   pull_request:
     branches: ["main"]
@@ -39,8 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker-practice/actions-setup-docker@master
+      - name: Docker Setup for MacOS
         if: matrix.os == 'macos-latest'
+        run: |
+          brew install docker
+          colima start
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
