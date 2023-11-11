@@ -45,6 +45,8 @@ jobs:
           brew install docker
           colima start
 
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
