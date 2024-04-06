@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 )
@@ -63,7 +62,7 @@ func Run(filePath string, language string, runId string) []byte {
 	}
 
 	// start the container, if it returns an error, print it
-	if err := cli.ContainerStart(ctx, response.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, response.ID, container.StartOptions{}); err != nil {
 		panic(err)
 	}
 
@@ -78,7 +77,7 @@ func Run(filePath string, language string, runId string) []byte {
 	}
 
 	// get the logs from the container
-	out, err := cli.ContainerLogs(ctx, response.ID, types.ContainerLogsOptions{
+	out, err := cli.ContainerLogs(ctx, response.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 		Follow:     true,
