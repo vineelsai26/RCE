@@ -34,7 +34,7 @@ func Run(filePath string, language string, runId string) []byte {
 	response, err := cli.ContainerCreate(
 		ctx,
 		&container.Config{
-			Image:           getDockerImage(language),
+			Image:           getDockerImage(language, cli, ctx),
 			Cmd:             runCommand,
 			NetworkDisabled: true,
 			WorkingDir:      "/usr/src/app/runs",

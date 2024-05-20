@@ -23,11 +23,6 @@ func help() {
 func main() {
 	PORT := "3000"
 
-	if len(os.Args) < 2 {
-		help()
-		return
-	}
-
 	args := os.Args[1:]
 
 	// parse the command line arguments
@@ -52,7 +47,7 @@ func main() {
 		}
 	}
 
-	if args[0] == "server" {
+	if len(args) == 0 || args[0] == "server" {
 		api.Serve(PORT)
 	} else {
 		help()

@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 )
 
@@ -28,8 +28,8 @@ func PullImages() {
 	}
 
 	// pull the images
-	for _, image := range dockerImages {
-		if reader, err := cli.ImagePull(ctx, image, types.ImagePullOptions{}); reader != nil {
+	for _, container_image := range dockerImages {
+		if reader, err := cli.ImagePull(ctx, container_image, image.PullOptions{}); reader != nil {
 			if err != nil {
 				panic(err)
 			}

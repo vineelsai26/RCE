@@ -1,22 +1,62 @@
 package docker
 
 import (
+	"context"
+	"io"
+	"os"
 	"strings"
+
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/client"
 )
 
 // getDockerImage returns the docker image required to run code for the given language
-func getDockerImage(language string) string {
+func getDockerImage(language string, cli *client.Client, ctx context.Context) string {
+	images, err := cli.ImageList(ctx, image.ListOptions{All: true})
+	if err != nil {
+		panic(err)
+	}
+
+	var tags []string = []string{}
+
+	for _, image := range images {
+		for _, repoTag := range image.RepoTags {
+			tags = append(tags, repoTag)
+		}
+	}
+
+	var container_image string
+
 	switch language {
 	case "python":
-		return "vineelsai/python"
+		container_image = "vineelsai/python"
 	case "c":
-		return "vineelsai/gcc"
+		container_image = "vineelsai/gcc"
 	case "cpp":
-		return "vineelsai/gcc"
+		container_image = "vineelsai/gcc"
 	case "javascript":
-		return "vineelsai/nodejs"
+		container_image = "vineelsai/nodejs"
 	default:
-		return "vineelsai/python"
+		container_image = "vineelsai/python"
+	}
+
+	for _, tag := range tags {
+		if tag == container_image {
+			return container_image
+		}
+	}
+
+	if reader, err := cli.ImagePull(ctx, container_image, image.PullOptions{}); reader != nil {
+		if err != nil {
+			panic(err)
+		}
+
+		defer reader.Close()
+		io.Copy(os.Stdout, reader)
+
+		return container_image
+	} else {
+		panic(err)
 	}
 }
 
