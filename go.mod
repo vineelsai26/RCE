@@ -2,7 +2,7 @@ module vineelsai.com/rce
 
 go 1.21
 
-require github.com/docker/docker v26.0.0+incompatible
+require github.com/docker/docker v27.0.0+incompatible
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
