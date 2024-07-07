@@ -20,9 +20,7 @@ func getDockerImage(language string, cli *client.Client, ctx context.Context) st
 	var tags []string = []string{}
 
 	for _, image := range images {
-		for _, repoTag := range image.RepoTags {
-			tags = append(tags, repoTag)
-		}
+		tags = append(tags, image.RepoTags...)
 	}
 
 	var container_image string
