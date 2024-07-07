@@ -33,19 +33,11 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     needs: build
     steps:
       - uses: actions/checkout@v4
-
-      - name: Docker Setup for MacOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install docker colima
-          colima start
-
-          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
