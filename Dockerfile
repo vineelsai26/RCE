@@ -24,9 +24,19 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN go get
-RUN go build
+RUN go get && go build -ldflags "-s -w" && go clean -modcache
 
-CMD ["./rce"]
+COPY etc/docker/daemon.json /etc/docker/daemon.json
+COPY ./entrypoint ./entrypoint
+COPY ./docker-entrypoint.d/* ./docker-entrypoint.d/
+
+ENV DOCKER_TMPDIR=/data/docker/tmp
+
+RUN chmod +x ./entrypoint
+RUN chmod +x ./run.sh
+
+ENTRYPOINT ["./entrypoint"]
+
+CMD ["./run.sh"]
 
 # docker run -it -p 3000:3000 -v "/var/run/docker.sock:/var/run/docker.sock" -v "/usr/src/app/runs:/usr/src/app/runs" vineelsai/rce
